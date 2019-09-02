@@ -62,13 +62,17 @@ module ParallelTests
           groups_to_run = options[:only_group].collect{|i| groups[i - 1]}.compact
           report_number_of_tests(groups_to_run) unless options[:quiet]
           execute_in_parallel(groups_to_run, groups_to_run.size, options) do |group|
-            run_tests(group, groups_to_run.index(group), 1, options)
+            group_index = groups_to_run.index(group)
+            # print_group_files(group, group_index)
+            run_tests(group, group_index, 1, options)
           end
         else
           report_number_of_tests(groups) unless options[:quiet]
 
           execute_in_parallel(groups, groups.size, options) do |group|
-            run_tests(group, groups.index(group), num_processes, options)
+            group_index = groups.index(group)
+            # print_group_files(group, group_index)
+            run_tests(group, group_index, num_processes, options)
           end
         end
 
@@ -82,6 +86,10 @@ module ParallelTests
       end
 
       abort final_fail_message if any_test_failed?(test_results)
+    end
+
+    def print_group_files(group, group_index)
+      puts "TEST FILES GROUP[#{group_index}]: #{group}\n"
     end
 
     def run_tests(group, process_number, num_processes, options)
@@ -140,7 +148,7 @@ module ParallelTests
       num_processes = groups.size
       num_tests = groups.map(&:size).inject(0, :+)
       tests_per_process = (num_processes == 0 ? 0 : num_tests / num_processes)
-      puts "#{num_processes} processes for #{num_tests} #{name}s, ~ #{tests_per_process} #{name}s per process"
+      puts "#{num_processes} processes! for #{num_tests} #{name}s, ~ #{tests_per_process} #{name}s per process"
     end
 
     #exit with correct status code so rake parallel:test && echo 123 works

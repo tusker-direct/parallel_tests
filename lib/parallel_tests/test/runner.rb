@@ -98,6 +98,8 @@ module ParallelTests
             output = [cmd, output].join("\n")
           end
 
+          puts "SEED[#{seed}] => #{cmd}\n\n"
+
           {:stdout => output, :exit_status => exitstatus, :command => cmd, :seed => seed}
         end
 
